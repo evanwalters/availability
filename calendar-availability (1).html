@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Availability Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --primary-dark: #134a5e;
+            --primary-light: #2a7f9a;
+            --accent: #57a6a1;
+            --accent-warm: #c9a961;
+            --background: #fafbfc;
+            --surface: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--background);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #0f4c5c 0%, #1a5f7a 50%, #2a7f9a 100%);
+            color: white;
+            padding: 4rem 2rem 3rem;
+            border-radius: 16px 16px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.4;
+        }
+
+        .header h1 {
+            font-size: 2.75rem;
+            margin-bottom: 0.75rem;
+            color: white;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .calendar-wrapper {
+            background: var(--surface);
+            border-radius: 0 0 16px 16px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .calendar-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 75%; /* 4:3 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .calendar-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 12px;
+        }
+
+        .instructions {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--accent);
+        }
+
+        .instructions h2 {
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+            font-size: 1.5rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .instructions ol {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin-bottom: 1rem;
+        }
+
+        .instructions li strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .instructions ul {
+            margin-top: 0.5rem;
+            margin-left: 1.25rem;
+            list-style-type: disc;
+        }
+
+        .instructions ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .instructions code {
+            background: rgba(26, 95, 122, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            font-size: 0.9em;
+        }
+
+        .instructions a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .instructions a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 3rem 1.5rem 2rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .calendar-wrapper {
+                padding: 1.5rem;
+            }
+
+            .calendar-container {
+                padding-bottom: 100%; /* More square on mobile */
+            }
+
+            .instructions {
+                padding: 1.5rem;
+            }
+
+            .instructions h2 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 My Availability</h1>
+            <p>Check when I'm available or busy</p>
+        </div>
+
+        <div class="calendar-wrapper">
+            <div class="calendar-container">
+                <!-- Replace YOUR_CALENDAR_ID with your actual Google Calendar ID -->
+                <iframe 
+                    src="https://calendar.google.com/calendar/embed?src=Yjg3MTExYWViMDA5NjMwNzdkYWFkNzg0ZDZhZDczZmZhOTBlYmNhOWNmMzY1ODQ0NjU3MzRjZjUwY2JjNDU2M0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&ctz=Australia/Melbourne&mode=MONTH&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0"
+                    frameborder="0"
+                    scrolling="no">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
